@@ -17,8 +17,8 @@ Description: The ROC curve method is one of the most important and commonly used
     variables can be analysed simultaneously, and for survival analysis 
     multiple time points and area under the curve analysis are supported.
       Still, flexible visualisation is possible with the 'ggplot2' package.
-      Reference are Kelly H. Zou (1998) <doi: 10.1002/(sici)1097-0258(19971015)16:19<2143::aid-sim655>3.0.co;2-3> and
-    P J Heagerty (2000) <doi: 10.1111/j.0006-341x.2000.00337.x>.
+      Reference are Kelly H. Zou (1998) <doi:10.1002/(sici)1097-0258(19971015)16:19%3C2143::aid-sim655%3E3.0.co;2-3> and
+    P J Heagerty (2000) <doi:10.1111/j.0006-341x.2000.00337.x>.
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

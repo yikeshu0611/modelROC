@@ -49,6 +49,12 @@ roci <- function(fiti,times=NULL,modeli=NULL,x=NULL,method=c('NNE','KM')){
         }
     }
     x <- x[ x %in% do::model.x(fitg)]
+    if (!is.null(x)){
+        for (i in 1:length(x)) {
+            formu <- as.formula(sprintf('Surv(%s,%s)~%s',do::model.y(fitg)[1],do::model.y(fitg)[2],x[i]))
+            data[,x[i]] <- exp(update(object = fitg,formula. = formu)$linear.predictors)
+        }
+    }
     if (is.logical(modeli)){
         if (modeli){
             if (!is.null(x) & (fiti %in% x)) stop(tmcn::toUTF8("model\u548Cx\u4E0D\u80FD\u6709\u540C\u540D:"),fiti)

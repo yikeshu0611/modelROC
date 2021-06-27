@@ -29,18 +29,18 @@ ggplot.roc_logit <- function(data,
     # plot
     if (lenmodel == 1 & lenmarker == 1){
         p <- ggplot(pp)
-        p <- p + geom_line(aes_string(x='FP',y='TP'))
+        p <- p + geom_line(aes_string(x='FP',y='TP'),size=lwd)
     }else if(lenmodel == 1 & lenmarker > 1){
         p <- ggplot(pp)
-        p <- p + geom_line(aes_string(x='FP',y='TP',color='marker'))
+        p <- p + geom_line(aes_string(x='FP',y='TP',color='marker'),size=lwd)
 
     }else if(lenmodel > 1 & lenmodel == lenmarker){
         p <- ggplot(pp)
-        p <- p + geom_line(aes_string(x='FP',y='TP',color='marker'))
+        p <- p + geom_line(aes_string(x='FP',y='TP',color='marker'),size=lwd)
 
     }else if(lenmodel > 1 & lenmodel != lenmarker){
         p <- ggplot(pp)
-        p <- p + geom_line(aes_string(x='FP',y='TP',color='marker')) +
+        p <- p + geom_line(aes_string(x='FP',y='TP',color='marker'),size=lwd) +
             facet_wrap(~model,ncol = length(unique(pp$model)))
     }
     if (!is.null(color)){
