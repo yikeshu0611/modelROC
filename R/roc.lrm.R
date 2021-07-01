@@ -9,16 +9,17 @@
 #' \emph{Smooth non-parametric receiver operating characteristic (ROC)
 #'  curves for continuous diagnostic tests.} Statistics in medicine
 #'  16, no. 19 (1997): 2143-2156.
-roc.glm <- function(...,negref=0,model=NULL,x=NULL,method=c("empirical", "binormal","nonparametric")){
-    roc.lrm(...,negref=negref,model=model,x=x,method=method)
+roc.glm <- function(...,newdata=NULL,negref=0,model=NULL,x=NULL,method=c("empirical", "binormal","nonparametric")){
+    roc.lrm(...,newdata=newdata,negref=negref,model=model,x=x,method=method)
 }
 
 #' @param negref negative reference for each model
+#' @param newdata new data for validation
 #' @method roc lrm
 #' @rdname roc
 #' @export
 #'
-roc.lrm <- function(...,negref=0,model=NULL,x=NULL,method=c("empirical", "binormal","nonparametric")){
+roc.lrm <- function(...,newdata=NULL,negref=0,model=NULL,x=NULL,method=c("empirical", "binormal","nonparametric")){
     method=match.arg(method)
     fitname <- do::get_names(...)
     if (isFALSE(model)) model=NULL
@@ -29,6 +30,7 @@ roc.lrm <- function(...,negref=0,model=NULL,x=NULL,method=c("empirical", "binorm
     if (length(negref)==1) negref <- rep(negref,length(fitname))
     if (length(fitname) != length(negref)) stop(tmcn::toUTF8("\u6709"),length(fitname),tmcn::toUTF8("\u4E2A\u6A21\u578B,\u4F46\u6709"),length(negref),tmcn::toUTF8("\u4E2Anegref"))
     lp <- lapply(fitname, function(i) lrmi(fiti=i,
+                                           newdatai=newdata,
                                            negref=negref[fitname==i],
                                            modeli=model[fitname==i],
                                            x=x,
@@ -37,12 +39,13 @@ roc.lrm <- function(...,negref=0,model=NULL,x=NULL,method=c("empirical", "binorm
     class(pp) <- c('roc_logit','data.frame')
     pp
 }
-lrmi <- function(fiti,negref=0,modeli=NULL,x=NULL,method=c("empirical", "binormal","nonparametric")){
+lrmi <- function(fiti,newdatai=NULL,negref=0,modeli=NULL,x=NULL,method=c("empirical", "binormal","nonparametric")){
     method=match.arg(method)
     fitg <- get(fiti,envir = .GlobalEnv)
-    data <- eval(fitg$call$data)
-    class <- data[,do::model.y(fitg)[1]]
-    linerpredictor <- data.frame(model=exp(fitg$linear.predictors))
+    data <- newdatai
+    if (is.null(data)) data = eval(fitg$call$data)
+    class <- data[,do::model.y(fitg)]
+    linerpredictor <- data.frame(model=exp(predict(fitg,newdata=data)))
 
     if (is.logical(x[1])){
         if (x[1]){
@@ -55,7 +58,8 @@ lrmi <- function(fiti,negref=0,modeli=NULL,x=NULL,method=c("empirical", "binorma
     if (!is.null(x)){
         for (i in 1:length(x)) {
             formu <- as.formula(sprintf('%s~%s',do::model.y(fitg)[1],x[i]))
-            data[,x[i]] <- exp(update(object = fitg,formula. = formu)$linear.predictors)
+            fitup <- update(object = fitg,formula. = formu)
+            data[,x[i]] <- exp(predict(fitup,newdata=data))
         }
     }
     if (is.logical(modeli)){
@@ -94,18 +98,20 @@ lrmi <- function(fiti,negref=0,modeli=NULL,x=NULL,method=c("empirical", "binorma
                           negref = negref,
                           method = method)
         Yd <- r$TPR-r$FPR
-        Yd.max <- ifelse(r$AUC >= 0.5,
+        cutoff.Youden.max <- ifelse(r$AUC >= 0.5,
                      paste0(round(r$Cutoff[which.max(Yd)],3),collapse = ', '),
                      paste0(round(r$Cutoff[which.min(Yd)],3),collapse = ', '))
 
         data.frame(model=fiti,
                    marker=j,
                    AUC=r$AUC,
+                   lower95CI=ROCit::ciAUC(r)$lower,
+                   upper95CI=ROCit::ciAUC(r)$upper,
                    FP=r$FPR,
                    TP=r$TPR,
                    cutoff=r$Cutoff,
                    Youden = Yd,
-                   Youden.max = Yd.max)
+                   risk.cutoff.Youden.max = cutoff.Youden.max)
     })
     do.call(rbind,lp)
 }

@@ -15,7 +15,7 @@ ggplot.roc_logit <- function(data,
     # data=pp
     pp <- as.data.frame(data)
     pp <- as.data.frame(pp)
-    mA <- unique(data)
+    mA <- summary(data)
     if (rank){
         level <- unique(mA$marker[order(mA$AUC,decreasing = TRUE)])
     }else{

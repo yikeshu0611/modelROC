@@ -29,7 +29,7 @@ Imports:
     do,
     tmcn,
     ROCit,
-    survivalROC
+    timeROC
 Suggests: 
     ggDCA,
     rms

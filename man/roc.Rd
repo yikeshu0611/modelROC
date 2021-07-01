@@ -10,12 +10,27 @@
 \usage{
 roc(...)
 
-\method{roc}{cph}(..., times = NULL, model = NULL, x = NULL, method = c("NNE", "KM"))
+\method{roc}{cph}(
+  ...,
+  times = NULL,
+  model = NULL,
+  x = NULL,
+  newdata = NULL,
+  method = c("NNE", "KM")
+)
 
-\method{roc}{coxph}(..., times = NULL, model = NULL, x = NULL, method = c("NNE", "KM"))
+\method{roc}{coxph}(
+  ...,
+  times = NULL,
+  model = NULL,
+  x = NULL,
+  newdata = NULL,
+  method = c("NNE", "KM")
+)
 
 \method{roc}{glm}(
   ...,
+  newdata = NULL,
   negref = 0,
   model = NULL,
   x = NULL,
@@ -24,6 +39,7 @@ roc(...)
 
 \method{roc}{lrm}(
   ...,
+  newdata = NULL,
   negref = 0,
   model = NULL,
   x = NULL,
@@ -40,6 +56,8 @@ characters mean model names.}
 
 \item{x}{can be logical or characters. TRUE means all x variable in regression
 will be calculated. One or more characters will be calculated only.}
+
+\item{newdata}{new data for validation}
 
 \item{method}{NNE or KM}
 

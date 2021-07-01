@@ -95,7 +95,7 @@ ggplot.auc_coxph <- function(data,
     pp <- as.data.frame(data)
     pp <- as.data.frame(pp)
     head(pp)
-    mA <- unique(data)
+    mA <- summary(data)
     # length
     (lenmodel <- length(unique(pp$model)))
     (lenmarker <- length(unique(pp$marker)))
