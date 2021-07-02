@@ -27,41 +27,41 @@
 #'
 #' r <- auc(fit,
 #'           model='This is model') # one model
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #'
 #' r <- auc(fit,
 #'           model=TRUE)            # all model
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #'
 #'
 #' #----            auc for x
 #' r <- auc(fit,
 #'           x='ANLN')              # one x
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #'
 #' r <- auc(fit,
 #'           x=c('ANLN','CENPA'))   # more x
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #'
 #' r <- auc(fit,
 #'           x=TRUE)                # all x
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #'
 #' r <- auc(fit,
 #'           model=TRUE,            # one model
 #'           x=TRUE)                # all x
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #'
 #' r <- auc(fit,
 #'           model='Three Genes',   # specify model names
 #'           x=TRUE)                # all X
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #'
 #'
@@ -72,7 +72,7 @@
 #'
 #' r <- auc(fit,fit2,
 #'           model=c('Three Genes','Two Genes'))            #
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #'
 #'
@@ -80,7 +80,7 @@
 #' r <- auc(fit,fit2,
 #'           model=TRUE,
 #'           x=TRUE)
-#' unique(r)
+#' summary(r)
 #' ggplot(r)
 #' }
 ggplot.auc_coxph <- function(data,

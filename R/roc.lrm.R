@@ -44,6 +44,7 @@ lrmi <- function(fiti,newdatai=NULL,negref=0,modeli=NULL,x=NULL,method=c("empiri
     fitg <- get(fiti,envir = .GlobalEnv)
     data <- newdatai
     if (is.null(data)) data = eval(fitg$call$data)
+    data <- data[,all.vars(fitg$terms)]
     class <- data[,do::model.y(fitg)]
     linerpredictor <- data.frame(model=exp(predict(fitg,newdata=data)))
 
@@ -57,9 +58,11 @@ lrmi <- function(fiti,newdatai=NULL,negref=0,modeli=NULL,x=NULL,method=c("empiri
     x <- x[ x %in% do::model.x(fitg)]
     if (!is.null(x)){
         for (i in 1:length(x)) {
-            formu <- as.formula(sprintf('%s~%s',do::model.y(fitg)[1],x[i]))
-            fitup <- update(object = fitg,formula. = formu)
-            data[,x[i]] <- exp(predict(fitup,newdata=data))
+            if (!is.numeric(data[,xi])){
+                formu <- as.formula(sprintf('%s~%s',do::model.y(fitg)[1],x[i]))
+                fitup <- update(object = fitg,formula. = formu)
+                data[,x[i]] <- exp(predict(fitup,newdata=data))
+            }
         }
     }
     if (is.logical(modeli)){
@@ -97,11 +100,18 @@ lrmi <- function(fiti,newdatai=NULL,negref=0,modeli=NULL,x=NULL,method=c("empiri
                           class = class,
                           negref = negref,
                           method = method)
-        Yd <- r$TPR-r$FPR
-        cutoff.Youden.max <- ifelse(r$AUC >= 0.5,
-                     paste0(round(r$Cutoff[which.max(Yd)],3),collapse = ', '),
-                     paste0(round(r$Cutoff[which.min(Yd)],3),collapse = ', '))
 
+        if (is.numeric(xmt[,j])){
+            cutoff <- r$Cutoff
+            Yd <- r$TPR-r$FPR
+            cutoff.opt <- ifelse(r$AUC >= 0.5,
+                                 paste0(round(r$Cutoff[which.max(Yd)],3),collapse = ', '),
+                                 paste0(round(r$Cutoff[which.min(Yd)],3),collapse = ', '))
+        }else{
+            cutoff <- NA
+            Yd <- NA
+            cutoff.opt <- NA
+        }
         data.frame(model=fiti,
                    marker=j,
                    AUC=r$AUC,
@@ -109,9 +119,9 @@ lrmi <- function(fiti,newdatai=NULL,negref=0,modeli=NULL,x=NULL,method=c("empiri
                    upper95CI=ROCit::ciAUC(r)$upper,
                    FP=r$FPR,
                    TP=r$TPR,
-                   cutoff=r$Cutoff,
+                   cutoff=cutoff,
                    Youden = Yd,
-                   risk.cutoff.Youden.max = cutoff.Youden.max)
+                   cutoff.opt = cutoff.opt)
     })
     do.call(rbind,lp)
 }

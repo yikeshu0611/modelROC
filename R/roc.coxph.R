@@ -56,9 +56,11 @@ roci <- function(fiti,times=NULL,modeli=NULL,x=NULL,newdatai=NULL,method=c('NNE'
     x <- x[ x %in% do::model.x(fitg)]
     if (!is.null(x)){
         for (i in 1:length(x)) {
-            formu <- as.formula(sprintf('Surv(%s,%s)~%s',do::model.y(fitg)[1],do::model.y(fitg)[2],x[i]))
-            fitup <- update(object = fitg,formula. = formu)
-            data[,x[i]] <- exp(predict(fitup,newdata = data))
+            if (!is.numeric(data[,xi])){
+                formu <- as.formula(sprintf('Surv(%s,%s)~%s',do::model.y(fitg)[1],do::model.y(fitg)[2],x[i]))
+                fitup <- update(object = fitg,formula. = formu)
+                data[,x[i]] <- exp(predict(fitup,newdata = data))
+            }
         }
     }
     if (is.logical(modeli)){

@@ -16,7 +16,7 @@ summary.roc_coxph <- function(x, incomparables = FALSE, ...){
 #' @method summary roc_logit
 summary.roc_logit <- function(x, incomparables = FALSE, ...){
     x <- as.data.frame(x)
-    unique(x[,c('model','marker','AUC','lower95CI','upper95CI','risk.cutoff.Youden.max')])
+    unique(x[,c('model','marker','AUC','lower95CI','upper95CI','cutoff.opt')])
 }
 #' @rdname summary
 #' @export
