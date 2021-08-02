@@ -25,7 +25,8 @@ roc.coxph <- function(...,times=NULL,model=NULL,x=NULL,newdata=NULL,method=c('NN
     if (isFALSE(x)) x= NULL
     if (isTRUE(model)) model= rep(TRUE,length(fitname))
     if (!is.null(model) &length(fitname) != length(model)) stop(tmcn::toUTF8("\u6709"),length(fitname),tmcn::toUTF8("\u4E2A\u6A21\u578B,\u4F46\u6709"),length(model),tmcn::toUTF8("\u4E2Amodel\u540D\u79F0"))
-    lp <- lapply(fitname, function(i) roci(fiti=i,times=times,
+    lp <- lapply(fitname, function(i) roci(fiti=i,
+                                           times=times,
                                            newdatai=newdata,
                                            modeli=model[fitname==i],
                                            x=x,
@@ -38,14 +39,17 @@ roci <- function(fiti,times=NULL,modeli=NULL,x=NULL,newdatai=NULL,method=c('NNE'
     method=match.arg(method)
     fitg <- get(fiti,envir = .GlobalEnv)
     data <- newdatai
-    if (is.null(data)) data = eval(fitg$call$data)
-    vtime <- data[,do::model.y(fitg)[1]]
+    if (is.null(data)) data = (data = as.data.frame(eval(fitg$call$data),check.names=FALSE))
+    (vtime <- data[,do::model.y(fitg)[1]])
     if (is.null(times)){
         times=median(vtime)
         message(tmcn::toUTF8("\u4F60\u6CA1\u6709\u6307\u5B9A\u65F6\u95F4times,\u9ED8\u8BA4\u91C7\u7528\u4E2D\u4F4D\u65F6\u95F4 "),times)
     }
-    vstatus <- data[,do::model.y(fitg)[2]]
-    linerpredictor <- data.frame(model=exp(predict(fitg,newdata = data)))
+    if (any(max(times) > max(data[,do::model.y(fitg)[1]]) | min(times) < min(data[,do::model.y(fitg)[1]]))){
+        stop('times out of range')
+    }
+    (vstatus <- data[,do::model.y(fitg)[2]])
+    (linerpredictor <- data.frame(model=exp(predict(fitg,newdata = data))))
     if (is.logical(x[1])){
         if (x[1]){
             x <- do::model.x(fitg)
@@ -56,7 +60,7 @@ roci <- function(fiti,times=NULL,modeli=NULL,x=NULL,newdatai=NULL,method=c('NNE'
     x <- x[ x %in% do::model.x(fitg)]
     if (!is.null(x)){
         for (i in 1:length(x)) {
-            if (!is.numeric(data[,xi])){
+            if (!is.numeric(data[,x[i]])){
                 formu <- as.formula(sprintf('Surv(%s,%s)~%s',do::model.y(fitg)[1],do::model.y(fitg)[2],x[i]))
                 fitup <- update(object = fitg,formula. = formu)
                 data[,x[i]] <- exp(predict(fitup,newdata = data))

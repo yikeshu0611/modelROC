@@ -20,8 +20,8 @@ roc.glm <- function(...,newdata=NULL,negref=0,model=NULL,x=NULL,method=c("empiri
 #' @export
 #'
 roc.lrm <- function(...,newdata=NULL,negref=0,model=NULL,x=NULL,method=c("empirical", "binormal","nonparametric")){
-    method=match.arg(method)
-    fitname <- do::get_names(...)
+    method <<- match.arg(method)
+    fitname <<- do::get_names(...)
     if (isFALSE(model)) model=NULL
     if (isFALSE(x)) x= NULL
     if (is.null(model) & is.null(x)) stop(tmcn::toUTF8("model\u548Cx\u4E0D\u80FD\u540C\u65F6\u4E3ANULL\u6216\u8005FALSE"))
@@ -42,9 +42,9 @@ roc.lrm <- function(...,newdata=NULL,negref=0,model=NULL,x=NULL,method=c("empiri
 lrmi <- function(fiti,newdatai=NULL,negref=0,modeli=NULL,x=NULL,method=c("empirical", "binormal","nonparametric")){
     method=match.arg(method)
     fitg <- get(fiti,envir = .GlobalEnv)
-    data <- newdatai
-    if (is.null(data)) data = eval(fitg$call$data)
-    data <- data[,all.vars(fitg$terms)]
+    (data <- newdatai)
+    if (is.null(data)) (data = as.data.frame(eval(fitg$call$data),check.names=FALSE))
+    (data <- data[,all.vars(fitg$terms)])
     class <- data[,do::model.y(fitg)]
     linerpredictor <- data.frame(model=exp(predict(fitg,newdata=data)))
 
@@ -58,6 +58,7 @@ lrmi <- function(fiti,newdatai=NULL,negref=0,modeli=NULL,x=NULL,method=c("empiri
     x <- x[ x %in% do::model.x(fitg)]
     if (!is.null(x)){
         for (i in 1:length(x)) {
+            xi <- x[i]
             if (!is.numeric(data[,xi])){
                 formu <- as.formula(sprintf('%s~%s',do::model.y(fitg)[1],x[i]))
                 fitup <- update(object = fitg,formula. = formu)

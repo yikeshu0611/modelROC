@@ -1,6 +1,6 @@
 Package: modelROC
 Title: Model Based ROC Analysis
-Version: 1.1
+Version: 1.2
 Authors@R: 
     c(
     person("Jing","Zhang",role = c("aut", "cre"),email = "zj391120@163.com"),
